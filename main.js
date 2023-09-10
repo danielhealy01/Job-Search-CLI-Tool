@@ -19,6 +19,7 @@ import {
 	trimLettersAndCastToNumber,
 } from './utils/utilityFunctions.js';
 import { Data } from './model/scrapeData.js';
+import drawTable from './controller/showData.js';
 
 const rl = readline.createInterface({
 	input: process.stdin,
@@ -108,10 +109,11 @@ async function checkDataExists() {
 const sleepTime = 1500;
 
 const jobSkill = '"SQL"';
-
+console.clear()
 await welcome();
 const db = new sqlite3.Database('database.sqlite');
 await checkDatabaseExists();
+console.clear()
 await menu();
 
 // Indeed Software Dev Rainbow Title 2.75 secs
@@ -205,12 +207,7 @@ async function scrape() {
 
 			db.run(
 				insertQuery,
-				[
-					data.id,
-					data.date,
-					data.skill,
-					data.jobs,
-				],
+				[data.id, data.date, data.skill, data.jobs],
 				async function (err) {
 					if (err) {
 						console.error('Error inserting data:', err.message);
@@ -221,7 +218,7 @@ async function scrape() {
 			);
 		}
 
-		await insertData(dataToInsert)
+		await insertData(dataToInsert);
 
 		// await menu()
 		const answer = await confirm({ message: 'Continue?' });
@@ -239,22 +236,26 @@ async function scrape() {
 async function getRankings() {
 	await checkDataExists();
 	console.log('getRankings');
+	console.clear();
+	await drawTable();
 }
 
 async function addJobSkill() {
 	console.log('addJobSkill');
 }
 
+// Display a table
+// fetch data from sqlite with query
+// display in table
+// sort by date
+
 // trim quotes off of SQL
 // change id to sequential based on last written id (cache? / revalidate?)
-// Display as table
-
 
 // somehow backup table
 // add new 'skills' table
 // ability to add new skills
 // scrape loops over each unique sill from skill table
-
 
 // on first run:
 // Please enter a password for the admin account setup:
