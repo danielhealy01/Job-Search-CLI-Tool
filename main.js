@@ -10,7 +10,15 @@ import sqlite3 from 'sqlite3';
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { sleep, sleepRandom, randomInterval, minTime, maxTime } from './utils/utilityFunctions.js';
+import {
+	sleep,
+	sleepRandom,
+	randomInterval,
+	minTime,
+	maxTime,
+	trimLettersAndCastToNumber,
+} from './utils/utilityFunctions.js';
+import { Data } from './model/scrapeData.js';
 
 const rl = readline.createInterface({
 	input: process.stdin,
@@ -20,7 +28,7 @@ const rl = readline.createInterface({
 //function to check if database exists
 async function checkDatabaseExists() {
 	const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
-	const dbName = 'database';
+	const dbName = 'database.sqlite';
 	// const filePath = path.join(currentDirectory, dbName);
 	const files = await fs.readdir(currentDirectory);
 
@@ -28,7 +36,7 @@ async function checkDatabaseExists() {
 		// await fs.access(filePath, fs.constants.F_OK);
 		console.log(files);
 
-		const dbExists = files.includes('database');
+		const dbExists = files.includes('database.sqlite');
 		console.log(dbExists);
 		if (dbExists) {
 			console.log(`The file '${dbName}' exists in the folder.`);
@@ -102,7 +110,7 @@ const sleepTime = 1500;
 const jobSkill = '"SQL"';
 
 await welcome();
-const db = new sqlite3.Database('database');
+const db = new sqlite3.Database('database.sqlite');
 await checkDatabaseExists();
 await menu();
 
@@ -174,6 +182,47 @@ async function scrape() {
 		await sleepRandom();
 		await browser.close();
 
+		//Create new data object
+		const randomNumber = () => Math.floor(Math.random() * (10000 - 1) + 1);
+		const date = new Date().toLocaleDateString('en-GB', {
+			day: '2-digit',
+			month: '2-digit',
+			year: 'numeric',
+		});
+		const dataToInsert = new Data(
+			randomNumber(),
+			date,
+			jobSkill,
+			trimLettersAndCastToNumber(fullTitle)
+		);
+		console.log(dataToInsert);
+		// db insert data object
+		async function insertData(data) {
+			const insertQuery = `
+    			INSERT INTO ranking (id, date, skill, jobs)
+    			VALUES (?, ?, ?, ?)
+  			`;
+
+			db.run(
+				insertQuery,
+				[
+					data.id,
+					data.date,
+					data.skill,
+					data.jobs,
+				],
+				async function (err) {
+					if (err) {
+						console.error('Error inserting data:', err.message);
+					} else {
+						console.log(`Data inserted with ID: ${data.id}`);
+					}
+				}
+			);
+		}
+
+		await insertData(dataToInsert)
+
 		// await menu()
 		const answer = await confirm({ message: 'Continue?' });
 		if (!answer) {
@@ -196,9 +245,10 @@ async function addJobSkill() {
 	console.log('addJobSkill');
 }
 
-// Currently scrape returns text string eg "728 jobs"
-// Create function to trim letters and cast as number
+// create model for db insertion
 
+// create shape of query as a class object
+//create a controller to insert the objects fields as a query into database
 
 // Move data check to scrape
 // if no data, send to add skills, otherwise, start scrape
@@ -217,5 +267,5 @@ async function addJobSkill() {
 
 // mvp
 // sqlite db pre-populated with skills
-// scrape repeats for each skill in db 
+// scrape repeats for each skill in db
 // rankings tabulates the data as an average

@@ -17,7 +17,7 @@ function trimLettersAndCastToNumber(inputString) {
 	const numericString = inputString.replace(/[^0-9\s]/g, '').trim();
     
 	// Parse the numeric string as a number
-	const numericValue = new Number(numericString);
+	const numericValue = parseInt(numericString);
     
 	// Check if the parsed value is NaN (Not-a-Number), and return 0 if it is
 	if (isNaN(numericValue)) {
