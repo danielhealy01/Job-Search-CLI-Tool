@@ -45,7 +45,8 @@ async function checkDatabaseExists() {
 			console.log(
 				`The file '${dbName}' does not exist in '${currentDirectory}'. Creating.`
 			);
-			await createTable();
+			createTable();
+			createSkillTable();
 		}
 	} catch (err) {
 		console.log(err);
@@ -53,12 +54,28 @@ async function checkDatabaseExists() {
 }
 
 async function createTable() {
-	db.run(
+	await db.run(
 		`CREATE TABLE IF NOT EXISTS ranking (
 			id INTEGER PRIMARY KEY,
 			date DATE NOT NULL,
 			skill TEXT NOT NULL,
 			jobs INT NOT NULL
+			)`,
+		(err) => {
+			if (err) {
+				console.error('Error creating table:', err.message);
+			} else {
+				console.log('Table created.');
+			}
+		}
+	);
+}
+
+async function createSkillTable() {
+	await db.run(
+		`CREATE TABLE IF NOT EXISTS skills (
+			skillId INTEGER PRIMARY KEY,
+			skill TEXT NOT NULL
 			)`,
 		(err) => {
 			if (err) {
@@ -158,7 +175,6 @@ async function menu() {
 
 async function scrape() {
 	console.log('scrape');
-	// await checkDataExists();
 	(async () => {
 		// Launch the browser and open a new blank page
 		const browser = await puppeteer.launch({ headless: 'new' });
@@ -220,10 +236,8 @@ async function scrape() {
 
 		await insertData(dataToInsert);
 
-		// await menu()
-
 		continueQuestion();
-		// console.clear();
+
 	})();
 }
 
@@ -250,17 +264,13 @@ async function continueQuestion() {
 	}
 }
 
-// Display a table
-// fetch data from sqlite with query
-// display in table
-// sort by date
+// add new 'skills' table
+// ability to add new skills
 
 // trim quotes off of SQL
 // change id to sequential based on last written id (cache? / revalidate?)
 
 // somehow backup table
-// add new 'skills' table
-// ability to add new skills
 // scrape loops over each unique sill from skill table
 
 // on first run:
