@@ -195,6 +195,11 @@ async function getRankings() {
 async function addJobSkill() {
 	console.log('addJobSkill');
 }
+
+// Currently scrape returns text string eg "728 jobs"
+// Create function to trim letters and cast as number
+
+
 // Move data check to scrape
 // if no data, send to add skills, otherwise, start scrape
 
