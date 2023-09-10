@@ -109,11 +109,11 @@ async function checkDataExists() {
 const sleepTime = 1500;
 
 const jobSkill = '"SQL"';
-console.clear()
+console.clear();
 await welcome();
 const db = new sqlite3.Database('database.sqlite');
 await checkDatabaseExists();
-console.clear()
+console.clear();
 await menu();
 
 // Indeed Software Dev Rainbow Title 2.75 secs
@@ -221,14 +221,8 @@ async function scrape() {
 		await insertData(dataToInsert);
 
 		// await menu()
-		const answer = await confirm({ message: 'Continue?' });
-		if (!answer) {
-			process.exit(0);
-		} else {
-			console.clear();
-			await menu();
-		}
 
+		continueQuestion();
 		// console.clear();
 	})();
 }
@@ -238,10 +232,22 @@ async function getRankings() {
 	console.log('getRankings');
 	console.clear();
 	await drawTable();
+	await sleep(sleepTime);
+	await continueQuestion();
 }
 
 async function addJobSkill() {
 	console.log('addJobSkill');
+}
+
+async function continueQuestion() {
+	const answer = await confirm({ message: 'Continue?' });
+	if (!answer) {
+		process.exit(0);
+	} else {
+		console.clear();
+		await menu();
+	}
 }
 
 // Display a table
