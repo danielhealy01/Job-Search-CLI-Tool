@@ -245,13 +245,16 @@ async function addJobSkill() {
 	console.log('addJobSkill');
 }
 
-// create model for db insertion
+// trim quotes off of SQL
+// change id to sequential based on last written id (cache? / revalidate?)
+// Display as table
 
-// create shape of query as a class object
-//create a controller to insert the objects fields as a query into database
 
-// Move data check to scrape
-// if no data, send to add skills, otherwise, start scrape
+// somehow backup table
+// add new 'skills' table
+// ability to add new skills
+// scrape loops over each unique sill from skill table
+
 
 // on first run:
 // Please enter a password for the admin account setup:
