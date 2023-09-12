@@ -6,3 +6,9 @@ export class Data {
 		this.jobs = jobs;
 	}
 }
+export class Skill {
+	constructor(skillId, skill) {
+		this.skillId = skillId;
+		this.skill = skill;
+	}
+}

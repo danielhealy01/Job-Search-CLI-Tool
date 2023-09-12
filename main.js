@@ -5,7 +5,6 @@ import chalkAnimation from 'chalk-animation';
 import inquirer from 'inquirer';
 import confirm from '@inquirer/confirm';
 import puppeteer from 'puppeteer';
-import readline from 'readline';
 import sqlite3 from 'sqlite3';
 import fs from 'fs/promises';
 import path from 'path';
@@ -18,13 +17,9 @@ import {
 	maxTime,
 	trimLettersAndCastToNumber,
 } from './utils/utilityFunctions.js';
-import { Data } from './model/scrapeData.js';
+import { Data, Skill } from './model/scrapeData.js';
 import drawTable from './controller/showData.js';
-
-const rl = readline.createInterface({
-	input: process.stdin,
-	output: process.stdout,
-});
+import { input } from '@inquirer/prompts';
 
 //function to check if database exists
 async function checkDatabaseExists() {
@@ -237,7 +232,6 @@ async function scrape() {
 		await insertData(dataToInsert);
 
 		continueQuestion();
-
 	})();
 }
 
@@ -251,7 +245,38 @@ async function getRankings() {
 }
 
 async function addJobSkill() {
-	console.log('addJobSkill');
+	console.clear();
+
+	const skillToAdd = await input({
+		message: 'Enter a new skill to be scraped',
+	});
+
+	//Create new skill object
+	const randomNumber = () => Math.floor(Math.random() * (10000 - 1) + 1);
+	if (!skillToAdd) {
+		console.clear();
+		menu();
+	} else {
+		const skillToInsert = new Skill(randomNumber(), skillToAdd);
+		console.log(skillToInsert);
+		// db insert data object
+		function insertSkill(skill) {
+			const insertQuery = `
+					INSERT INTO skills (skillid, skill)
+					VALUES (?, ?)
+				  `;
+
+			db.run(insertQuery, [skill.skillId, skill.skill], async function (err) {
+				if (err) {
+					console.error('Error inserting data:', err.message);
+				} else {
+					console.log(`Data inserted with ID: ${skill.skillId}`);
+				}
+			});
+		}
+		insertSkill(skillToInsert);
+		console.log(`successfully inserted ${skillToAdd}`);
+	}
 }
 
 async function continueQuestion() {
@@ -264,8 +289,8 @@ async function continueQuestion() {
 	}
 }
 
-// add new 'skills' table
-// ability to add new skills
+// ability to add new skills via stdin
+// readline not working, try inquirer prompt
 
 // trim quotes off of SQL
 // change id to sequential based on last written id (cache? / revalidate?)
