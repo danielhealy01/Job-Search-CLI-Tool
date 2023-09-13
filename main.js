@@ -276,6 +276,25 @@ async function addJobSkill() {
 		}
 		insertSkill(skillToInsert);
 		console.log(`successfully inserted ${skillToAdd}`);
+
+		// create new table for skill
+		// table name = skillToInsert.skill
+		// fields id, date, jobs
+
+		await db.run(
+			`CREATE TABLE IF NOT EXISTS ${skillToInsert.skill.replaceAll(' ', '')} (
+			id INTEGER PRIMARY KEY,
+			date DATE NOT NULL,
+			jobs INT NOT NULL
+			)`,
+			(err) => {
+				if (err) {
+					console.error('Error creating table:', err.message);
+				} else {
+					console.log(`${skillToInsert.skill} table created.`);
+				}
+			}
+		);
 	}
 }
 
@@ -289,8 +308,9 @@ async function continueQuestion() {
 	}
 }
 
-// ability to add new skills via stdin
-// readline not working, try inquirer prompt
+// remove cached .sqlites
+// maybe on new skill, make a table for that skill, similar to existing sql
+// make an average summary table for last 3 months
 
 // trim quotes off of SQL
 // change id to sequential based on last written id (cache? / revalidate?)
