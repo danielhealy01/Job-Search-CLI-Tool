@@ -19,6 +19,7 @@ import {
 } from './utils/utilityFunctions.js';
 import { Data, Skill } from './model/scrapeData.js';
 import drawTable from './controller/showData.js';
+import drawSkillTable from './controller/showSkillList.js';
 import { input } from '@inquirer/prompts';
 
 //function to check if database exists
@@ -150,6 +151,7 @@ async function menu() {
 				choices: [
 					'Scrape Jobs on Indeed',
 					'Show Job Skill Rankings',
+					'Show skill list',
 					'Add a new Job Skill to Scrape',
 					'Exit',
 				],
@@ -162,6 +164,8 @@ async function menu() {
 				getRankings();
 			} else if (answer.menuList == 'Scrape Jobs on Indeed') {
 				scrape();
+			} else if (answer.menuList == 'Show skill list') {
+				showSkillList();
 			} else if (answer.menuList == 'Add a new Job Skill to Scrape') {
 				addJobSkill();
 			}
@@ -278,8 +282,6 @@ async function addJobSkill() {
 		console.log(`successfully inserted ${skillToAdd}`);
 
 		// create new table for skill
-		// table name = skillToInsert.skill
-		// fields id, date, jobs
 
 		await db.run(
 			`CREATE TABLE IF NOT EXISTS ${skillToInsert.skill.replaceAll(' ', '')} (
@@ -307,6 +309,34 @@ async function continueQuestion() {
 		await menu();
 	}
 }
+
+async function showSkillList() {
+	console.log('show skill list');
+	// async function getTables() {
+	// 	await db.all(
+	// 		`SELECT name FROM sqlite_master WHERE type='table';`,
+	// 		(err, rows) => {
+	// 			if (err) {
+	// 				console.error('Error is:', err.message);
+	// 			} else {
+	// 				const data = [];
+	// 				rows.forEach((row) => {
+	// 					data.push(row.name);
+	// 				});
+	// 				console.log(data);
+	// 			}
+	// 		}
+	// 	);
+	// }
+	await drawSkillTable();
+	await sleep(sleepTime);
+	continueQuestion();
+}
+
+// menu option to list all skills currently being scraped
+// add spinner during scrape
+// write for loop to scrape for each skill and write to said skill's table
+// generate 3 month average for each individual skill table and summarise in general table
 
 // remove cached .sqlites
 // maybe on new skill, make a table for that skill, similar to existing sql
