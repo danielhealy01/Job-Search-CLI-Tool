@@ -17,10 +17,11 @@ import {
 	maxTime,
 	trimLettersAndCastToNumber,
 } from './utils/utilityFunctions.js';
-import { Data, Skill } from './model/scrapeData.js';
+import { Data, Skill, SkillData } from './model/scrapeData.js';
 import drawTable from './controller/showData.js';
 import drawSkillTable from './controller/showSkillList.js';
 import { input } from '@inquirer/prompts';
+
 
 //function to check if database exists
 async function checkDatabaseExists() {
@@ -150,6 +151,7 @@ async function menu() {
 				message: 'What would you like to do?:',
 				choices: [
 					'Scrape Jobs on Indeed',
+					"Scrape all skill's Jobs on Indeed",
 					'Show Job Skill Rankings',
 					'Show skill list',
 					'Add a new Job Skill to Scrape',
@@ -164,6 +166,8 @@ async function menu() {
 				getRankings();
 			} else if (answer.menuList == 'Scrape Jobs on Indeed') {
 				scrape();
+			} else if (answer.menuList == "Scrape all skill's Jobs on Indeed") {
+				scrapeAllSkills();
 			} else if (answer.menuList == 'Show skill list') {
 				showSkillList();
 			} else if (answer.menuList == 'Add a new Job Skill to Scrape') {
@@ -292,8 +296,11 @@ async function addJobSkill() {
 			(err) => {
 				if (err) {
 					console.error('Error creating table:', err.message);
+					continueQuestion();
 				} else {
 					console.log(`${skillToInsert.skill} table created.`);
+					// sleepRandom()
+					continueQuestion()
 				}
 			}
 		);
@@ -333,9 +340,100 @@ async function showSkillList() {
 	continueQuestion();
 }
 
-// menu option to list all skills currently being scraped
+async function scrapeAllSkills() {
+	// console.log('scrape all');
+	// async function getTables() {
+	// 	return await db.all(
+	// 		`SELECT name FROM sqlite_master WHERE type='table';`,
+	// 		(err, rows) => {
+	// 			if (err) {
+	// 				console.error('Error is:', err.message);
+	// 			} else {
+	// 				const data = [];
+	// 				rows.forEach((row) => {
+	// 					data.push(row.name);
+	// 				});
+	// 				console.log(data);
+	// 			}
+	// 		}
+	// 	);
+
+	// }
+	// return await getTables()
+	async function newScrape(skill) {
+		
+		console.log('new scrape');
+		(async () => {
+			// Launch the browser and open a new blank page
+			const browser = await puppeteer.launch({ headless: 'new' });
+			const page = await browser.newPage();
+			const jobSkill = skill;
+			// Navigate the page to a URL
+			await page.goto(
+				`https://uk.indeed.com/jobs?q=${jobSkill}+%C2%A340%2C000&l=London&radius=0&fromage=14&vjk=5fb7c8b94e6cbfb6`
+			);
+
+			// Set screen size
+			await sleepRandom();
+			await page.setViewport({ width: 1080, height: 1024 });
+
+			// Locate the full title with a unique string
+			const textSelector = '.jobsearch-JobCountAndSortPane-jobCount';
+			await page.waitForSelector(textSelector);
+			const result = await page.$eval(textSelector, (el) => el.textContent);
+
+			// Print the full title
+			console.log(`There are ${result}`);
+			console.log(page.url());
+			await sleepRandom();
+			await browser.close();
+
+			//Create new data object
+			const randomNumber = () => Math.floor(Math.random() * (10000 - 1) + 1);
+			const date = new Date().toLocaleDateString('en-GB', {
+				day: '2-digit',
+				month: '2-digit',
+				year: 'numeric',
+			});
+			const dataToInsert = new SkillData(
+				randomNumber(),
+				date,
+				trimLettersAndCastToNumber(result)
+			);
+			console.log(dataToInsert);
+			// db insert data object
+			async function insertData(data) {
+				const insertQuery = `
+    			INSERT INTO ${jobSkill} (id, date, jobs)
+    			VALUES (?, ?, ?)
+  			`;
+
+				db.run(
+					insertQuery,
+					[data.id, data.date, data.jobs],
+					async function (err) {
+						if (err) {
+							console.error('Error inserting data:', err.message);
+						} else {
+							console.log(`Data inserted with ID: ${data.id}`);
+						}
+					}
+				);
+			}
+
+			await insertData(dataToInsert);
+
+			continueQuestion();
+		})();
+	}
+	newScrape("sql")
+}
+
 // add spinner during scrape
 // write for loop to scrape for each skill and write to said skill's table
+
+// for each on array of skills, callback to execute scrape function
+
 // generate 3 month average for each individual skill table and summarise in general table
 
 // remove cached .sqlites

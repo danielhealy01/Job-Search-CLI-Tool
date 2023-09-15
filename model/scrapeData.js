@@ -12,3 +12,10 @@ export class Skill {
 		this.skill = skill;
 	}
 }
+export class SkillData {
+	constructor(id, date, jobs) {
+		this.id = id;
+		this.date = date;
+		this.jobs = jobs;
+	}
+}
