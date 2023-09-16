@@ -22,7 +22,6 @@ import drawTable from './controller/showData.js';
 import drawSkillTable from './controller/showSkillList.js';
 import { input } from '@inquirer/prompts';
 
-
 //function to check if database exists
 async function checkDatabaseExists() {
 	const currentDirectory = path.dirname(fileURLToPath(import.meta.url));
@@ -300,7 +299,7 @@ async function addJobSkill() {
 				} else {
 					console.log(`${skillToInsert.skill} table created.`);
 					// sleepRandom()
-					continueQuestion()
+					continueQuestion();
 				}
 			}
 		);
@@ -361,7 +360,6 @@ async function scrapeAllSkills() {
 	// }
 	// return await getTables()
 	async function newScrape(skill) {
-		
 		console.log('new scrape');
 		(async () => {
 			// Launch the browser and open a new blank page
@@ -422,11 +420,79 @@ async function scrapeAllSkills() {
 			}
 
 			await insertData(dataToInsert);
-
-			continueQuestion();
 		})();
 	}
-	newScrape("sql")
+
+	// async function getSkillList() {
+	// 	const skillList = [];
+	// 	await db.all(
+	// 		`SELECT name FROM sqlite_master WHERE type='table';`,
+	// 		(err, rows) => {
+	// 			if (err) {
+	// 				console.error('Error is:', err.message);
+	// 			} else {
+	// 				rows.forEach((row) => {
+	// 					skillList.push([row.name]);
+
+	// 					console.log(skillList);
+	// 				});
+	// 			}
+	// 		}
+	// 	);
+	// 	return skillList;
+	// }
+	// const skillList = await getSkillList();
+
+	// console.log(skillList);
+
+	async function getSkillList() {
+		return new Promise((resolve, reject) => {
+			const skillList = [];
+			db.all(
+				`SELECT name FROM sqlite_master WHERE type='table';`,
+				(err, rows) => {
+					if (err) {
+						console.error('Error is:', err.message);
+						reject(err); // Reject the promise if there's an error
+					} else {
+						rows.forEach((row) => {
+							skillList.push(row.name);
+						});
+						resolve(skillList); // Resolve the promise with the skillList
+					}
+				}
+			);
+		});
+	}
+
+	async function filteredSkillList() {
+		try {
+			const skillList = await getSkillList();
+			console.log('Original skillList:', skillList);
+
+			// Filter the tables that match 'skills' and 'rankings'
+			const filteredTables1 = skillList.filter((name) => name !== 'skills');
+			const filteredTables2 = filteredTables1.filter(
+				(name) => name !== 'ranking'
+			);
+			console.log('Filtered tables:', filteredTables2);
+			return filteredTables2;
+		} catch (error) {
+			console.error('Error:', error.message);
+		}
+	}
+
+
+	(async () => {
+
+		const list = await filteredSkillList();
+		console.log(Array.isArray(list))
+		await list.forEach((row) => {
+			newScrape(row);
+		})
+	})()
+	await sleep(5000);
+	continueQuestion();
 }
 
 // add spinner during scrape
