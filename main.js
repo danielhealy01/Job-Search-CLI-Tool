@@ -12,9 +12,6 @@ import { fileURLToPath } from 'url';
 import {
 	sleep,
 	sleepRandom,
-	randomInterval,
-	minTime,
-	maxTime,
 	trimLettersAndCastToNumber,
 } from './utils/utilityFunctions.js';
 import { Data, Skill, SkillData } from './model/scrapeData.js';
@@ -30,9 +27,6 @@ async function checkDatabaseExists() {
 	const files = await fs.readdir(currentDirectory);
 
 	try {
-		// await fs.access(filePath, fs.constants.F_OK);
-		console.log(files);
-
 		const dbExists = files.includes('database.sqlite');
 		console.log(dbExists);
 		if (dbExists) {
@@ -318,47 +312,12 @@ async function continueQuestion() {
 
 async function showSkillList() {
 	console.log('show skill list');
-	// async function getTables() {
-	// 	await db.all(
-	// 		`SELECT name FROM sqlite_master WHERE type='table';`,
-	// 		(err, rows) => {
-	// 			if (err) {
-	// 				console.error('Error is:', err.message);
-	// 			} else {
-	// 				const data = [];
-	// 				rows.forEach((row) => {
-	// 					data.push(row.name);
-	// 				});
-	// 				console.log(data);
-	// 			}
-	// 		}
-	// 	);
-	// }
 	await drawSkillTable();
 	await sleep(sleepTime);
 	continueQuestion();
 }
 
 async function scrapeAllSkills() {
-	// console.log('scrape all');
-	// async function getTables() {
-	// 	return await db.all(
-	// 		`SELECT name FROM sqlite_master WHERE type='table';`,
-	// 		(err, rows) => {
-	// 			if (err) {
-	// 				console.error('Error is:', err.message);
-	// 			} else {
-	// 				const data = [];
-	// 				rows.forEach((row) => {
-	// 					data.push(row.name);
-	// 				});
-	// 				console.log(data);
-	// 			}
-	// 		}
-	// 	);
-
-	// }
-	// return await getTables()
 	async function newScrape(skill) {
 		console.log('new scrape');
 		(async () => {
@@ -423,28 +382,6 @@ async function scrapeAllSkills() {
 		})();
 	}
 
-	// async function getSkillList() {
-	// 	const skillList = [];
-	// 	await db.all(
-	// 		`SELECT name FROM sqlite_master WHERE type='table';`,
-	// 		(err, rows) => {
-	// 			if (err) {
-	// 				console.error('Error is:', err.message);
-	// 			} else {
-	// 				rows.forEach((row) => {
-	// 					skillList.push([row.name]);
-
-	// 					console.log(skillList);
-	// 				});
-	// 			}
-	// 		}
-	// 	);
-	// 	return skillList;
-	// }
-	// const skillList = await getSkillList();
-
-	// console.log(skillList);
-
 	async function getSkillList() {
 		return new Promise((resolve, reject) => {
 			const skillList = [];
@@ -496,17 +433,12 @@ async function scrapeAllSkills() {
 }
 
 // add spinner during scrape
-// write for loop to scrape for each skill and write to said skill's table
-
-// for each on array of skills, callback to execute scrape function
-
 // generate 3 month average for each individual skill table and summarise in general table
 
 // remove cached .sqlites
 // maybe on new skill, make a table for that skill, similar to existing sql
 // make an average summary table for last 3 months
 
-// trim quotes off of SQL
 // change id to sequential based on last written id (cache? / revalidate?)
 
 // somehow backup table
@@ -517,8 +449,6 @@ async function scrapeAllSkills() {
 // Confirm password:
 // Admin account created.
 // Loading menu.
-
-// To add a skill, you must enter the admin password:
 
 //add random sleep times between pings to avoid bot detection
 // Show rankings reads db and displays as table

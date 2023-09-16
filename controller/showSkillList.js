@@ -27,21 +27,6 @@ export default async function drawSkillTable() {
 
 	const db = new sqlite3.Database('database.sqlite');
 
-	// await db.all('SELECT * FROM ranking ORDER BY date', (err, rows) => {
-	// 	if (err) {
-	// 		console.error('Error: ', err.message);
-	// 	} else {
-	// 		if (rows.length === 0) {
-	// 			console.log('No rows found.');
-	// 		} else {
-	// 			rows.forEach((row) => {
-	// 				table.push([row.id, row.date, row.skill, row.jobs]);
-	// 			});
-	// 			console.log(table.toString());
-	// 		}
-	// 	}
-	// });
-
 	await db.all(
 		`SELECT name FROM sqlite_master WHERE type='table';`,
 		(err, rows) => {
@@ -60,4 +45,3 @@ export default async function drawSkillTable() {
 	await db.close();
 }
 
-// drawTable();
