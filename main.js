@@ -143,9 +143,9 @@ async function menu() {
 				type: 'list',
 				message: 'What would you like to do?:',
 				choices: [
-					'Scrape Jobs on Indeed',
+					// 'Scrape Jobs on Indeed',
 					"Scrape all skill's Jobs on Indeed",
-					'Show Job Skill Rankings',
+					// 'Show Job Skill Rankings',
 					'Show skill list',
 					'Add a new Job Skill to Scrape',
 					'Exit',
@@ -155,11 +155,14 @@ async function menu() {
 		.then((answer) => {
 			if (answer.menuList == 'Exit') {
 				process.exit(0);
-			} else if (answer.menuList == 'Show Job Skill Rankings') {
-				getRankings();
-			} else if (answer.menuList == 'Scrape Jobs on Indeed') {
-				scrape();
-			} else if (answer.menuList == "Scrape all skill's Jobs on Indeed") {
+			}
+			// else if (answer.menuList == 'Show Job Skill Rankings') {
+			// 	getRankings();
+			// }
+			// else if (answer.menuList == 'Scrape Jobs on Indeed') {
+			// 	scrape();
+			// }
+			else if (answer.menuList == "Scrape all skill's Jobs on Indeed") {
 				scrapeAllSkills();
 			} else if (answer.menuList == 'Show skill list') {
 				showSkillList();
@@ -419,15 +422,13 @@ async function scrapeAllSkills() {
 		}
 	}
 
-
 	(async () => {
-
 		const list = await filteredSkillList();
-		console.log(Array.isArray(list))
+		console.log(Array.isArray(list));
 		await list.forEach((row) => {
 			newScrape(row);
-		})
-	})()
+		});
+	})();
 	await sleep(5000);
 	continueQuestion();
 }

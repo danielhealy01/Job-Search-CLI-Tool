@@ -34,9 +34,11 @@ export default async function drawSkillTable() {
 				console.error('Error is:', err.message);
 			} else {
 
-				rows.forEach((row) => {
-					skillTable.push([row.name,]);
-				});
+                rows.forEach((row) => {
+                    if (row.name !== 'ranking' && row.name !== 'skills') {
+											skillTable.push([row.name]);
+										}
+                });
 				console.log(skillTable.toString());
 			}
 		}
